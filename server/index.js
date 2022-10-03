@@ -24,7 +24,7 @@ app.post("/addCurrency", (req, res) =>{
             VALUES ($1, $2, $3)`,
             [name, last_modified, price]
         );
-        res.json(newCurrency.rows[0]); // Gave error but inserted well.
+        res.json(newCurrency.rows);
     } catch (error) {
         console.log(error);     
     }
@@ -55,7 +55,7 @@ app.post("/addUser", async (req, res) => {
             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`, 
             [id_end_user, name, lastname, dob, email, username, password]
         );
-        res.json(newUser.rows[0]);
+        res.json(newUser.rows);
     } catch (error) {
         console.log(error);
     }
@@ -64,11 +64,20 @@ app.post("/addUser", async (req, res) => {
 // Add account
 app.post("/addAccount", (req, res) =>{
     try {
-        //const {id_account, id_end_user, id_bank, }
+        const {id_account, id_end_user, id_bank, type, 
+            id_currency, balance, date_created} = req.body;
+        const newAccount = pool.query(
+            `INSERT INTO account (id_account, id_end_user, id_bank, type, id_currency, balance, date_created)
+            VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+            [id_account, id_end_user, id_bank, type, id_currency, balance, date_created]
+        );
+        res.json(newAccount.rows);
     } catch (error) {
         console.log(error);
     }
 });
+
+// Pending add Transaction here:
 
 app.listen(port, ()=>{
     console.log('listening on port: ', port);

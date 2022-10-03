@@ -1,13 +1,15 @@
 
-import './App.css';
 import Test from './Components/Test';
-import {Typography} from '@mui/material'
+import {Typography} from '@mui/material';
+import {AppBar} from '@mui/material';
 
 function App() {
   return (
-    <div className="App">
-      <Test />
+    <div >
+      <AppBar />
       <Typography variant="h1"> Hello, World!</Typography>
+      <Test />
+      
     </div>
   );
 }

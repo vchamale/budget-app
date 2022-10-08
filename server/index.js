@@ -16,13 +16,13 @@ app.use(express.json()); // This is for req.body
 // INSERTS:
 
 // Add Currency
-app.post("/addCurrency", (req, res) =>{
+app.post("/addCurrency", async (req, res) =>{
     try {
-        const {name, last_modified, price} = req.body;
+        const {name, price} = req.body;
         const newCurrency = pool.query(
-            `INSERT INTO currency (name, last_modified, price)
-            VALUES ($1, $2, $3)`,
-            [name, last_modified, price]
+            `INSERT INTO currency (name, price)
+            VALUES ($1, $2) RETURNING *`,
+            [name, price]
         );
         res.json(newCurrency.rows);
     } catch (error) {
@@ -47,31 +47,31 @@ app.post("/addBank", async (req, res) => {
 // Add User
 app.post("/addUser", async (req, res) => {
     try {
-        const {id_end_user, name, lastname, dob, 
-            email, username, password} = req.body;
+        const {name, lastname, dob, 
+            email, password} = req.body;
         const newUser = await pool.query(
             `INSERT INTO end_user 
-            (id_end_user, name, lastname, dob, email, username, password) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`, 
-            [id_end_user, name, lastname, dob, email, username, password]
+            (name, lastname, dob, email, password) 
+            VALUES ($1, $2, $3, $4, $5) RETURNING *`, 
+            [name, lastname, dob, email, password]
         );
         res.json(newUser.rows);
     } catch (error) {
         console.log(error);
     }
-})
+});
 
 // Add account
-app.post("/addAccount", (req, res) =>{
+app.post("/addAccount", async (req, res) =>{
     try {
-        const {id_account, id_end_user, id_bank, type, 
-            id_currency, balance, date_created} = req.body;
-        const newAccount = pool.query(
-            `INSERT INTO account (id_account, id_end_user, id_bank, type, id_currency, balance, date_created)
-            VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-            [id_account, id_end_user, id_bank, type, id_currency, balance, date_created]
+        const {id_account, id_end_user, id_bank, id_account_type, 
+            id_currency, balance} = req.body;
+        const newAccount = await pool.query(
+            `INSERT INTO account (id_account, id_end_user, id_bank, id_account_type, id_currency, balance)
+            VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+            [id_account, id_end_user, id_bank, id_account_type, id_currency, balance]
         );
-        res.json(newAccount.rows);
+        res.json(newAccount.rows[0]);
     } catch (error) {
         console.log(error);
     }
@@ -79,12 +79,21 @@ app.post("/addAccount", (req, res) =>{
 
 // Pending add Transaction here:
 
+// SELECT ALL
+
+// Select all accounts:
+app.get("/accounts", async (req, res) => {
+    try {
+    
+      const accounts = await pool.query("SELECT * FROM account");
+      res.json(accounts.rows);
+    } catch (err) {
+      console.error(err.message);
+    }
+  });
+
 app.listen(port, ()=>{
     console.log('listening on port: ', port);
 });
 
 
-/*
-require('dotenv').config({path:".env"});
-
-console.log(process.env.JAMES);*/

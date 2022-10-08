@@ -7,8 +7,11 @@ function App() {
   return (
     <div >
       <AppBar />
-      <Typography variant="h1"> Hello, World!</Typography>
+      <Typography variant="h1"> Hola Jaime!</Typography>
       <Test />
+      <AppBar position="fixed">
+        <Typography variant="span">James</Typography>
+      </AppBar>
       
     </div>
   );

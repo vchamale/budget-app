@@ -71,14 +71,34 @@ app.post("/addAccount", async (req, res) =>{
             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
             [id_account, id_end_user, id_bank, id_account_type, id_currency, balance]
         );
-        res.json(newAccount.rows[0]);
+        res.json(newAccount.rows[0]); 
     } catch (error) {
         console.log(error);
     }
 });
 
-// Pending add Transaction here:
+// Add Category
 
+app.post("/addCategory", async (req, res) => {
+    const {name} = req.body;
+    const addCategory = await pool.query(
+        `INSERT INTO category (name) VALUES ($1) RETURNING *`,
+        [name]
+    );
+    res.json(addCategory.rows[0]); 
+});
+
+// Pending add Transaction here:
+app.post("/addTransaction", async (req, res) => {
+    const {date_transaction, id_account, id_transaction_type, 
+        id_category, description, id_currency, ammount} = req.body;
+    const newTransaction = await pool.query(
+        `INSERT INTO transaction (date_transaction, id_account, id_transaction_type, id_category, description, id_currency, ammount)
+        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`, 
+        [date_transaction, id_account, id_transaction_type, id_category, description, id_currency, ammount]
+    );
+    res.json(newTransaction.rows[0]); 
+})
 // SELECT ALL
 
 // Select all accounts:
